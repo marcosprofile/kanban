@@ -4,43 +4,39 @@ const addTaskForm = document.querySelector('#add-task-form')
 const addTaskInput = document.querySelector('input')
 let draggedTask = null
 
-
-addTaskForm.addEventListener('submit', function(e) {
-  e.preventDefault()
-  const newTaskText = addTaskInput.value.trim()
-
-  if(newTaskText !== '') {
-    const newTask = document.createElement('li')
-    newTask.textContent = newTaskText
-    newTask.setAttribute('draggable', true)
-    newTask.addEventListener('dragstart', function(event) {
-      draggedTask = newTask
-      event.dataTransfer.effectAllowed = 'move'
-      event.dataTransfer.setData('text/html', newTask.innerHTML)
-    })
-
-    document.querySelector('#todo').appendChild(newTask)
-    addTaskInput.value = ''
-  }
-})
-
-for (const element of tasks) {
-  const task = element
-
+// Function for add events of drag and drop to a task
+function dragDropTask(task) {
   task.addEventListener('dragstart', function(event) {
     draggedTask = task
     event.dataTransfer.effectAllowed = 'move'
     event.dataTransfer.setData('text/html', task.innerHTML)
   })
-  
+
   task.addEventListener('dragend', function() {
     draggedTask = null
   })
 }
 
-for (const element of columns) {
-  const column = element
+// Events of drag and drop in all existing tasks
+tasks.forEach(task => dragDropTask(task))
 
+// Add new task
+addTaskForm.addEventListener('submit', function(e) {
+  e.preventDefault()
+  const newTaskText = addTaskInput.value.trim()
+
+  if (newTaskText !== '') {
+    const newTask = document.createElement('li')
+    newTask.textContent = newTaskText
+    newTask.setAttribute('draggable', true)
+    dragDropTask(newTask)
+    document.querySelector('#todo').appendChild(newTask)
+    addTaskInput.value = ''
+  }
+})
+
+// Events of drag and drop in all columns
+columns.forEach(column => {
   column.addEventListener('dragover', function(event) {
     event.preventDefault()
     event.dataTransfer.dropEffect = 'move'
@@ -55,20 +51,10 @@ for (const element of columns) {
 
   column.addEventListener('drop', function(event) {
     event.preventDefault()
-    const task = document.createElement('li')
-    task.innerHTML = event.dataTransfer.getData('text/html')
-    task.setAttribute('draggable', true)
-    task.addEventListener('dragstart', function(event) {
-      draggedTask = task
-      event.dataTransfer.effectAllowed = 'move'
-      event.dataTransfer.setData('text/html', task.innerHTML)
-    })
-
-    column.appendChild(task)
-    column.classList.remove('dragover')
-    column.classList.remove('dragging')
-
-    const previousColumn = draggedTask.parentNode
-    previousColumn.removeChild(draggedTask)
+    if (draggedTask) {
+      column.appendChild(draggedTask)
+      column.classList.remove('dragover')
+      column.classList.remove('dragging')
+    }
   })
-}
+})

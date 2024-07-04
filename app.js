@@ -1,6 +1,28 @@
 const tasks = document.querySelectorAll('.tasks li')
 const columns = document.querySelectorAll('.tasks')
+const addTaskForm = document.querySelector('#add-task-form')
+const addTaskInput = document.querySelector('input')
 let draggedTask = null
+
+
+addTaskForm.addEventListener('submit', function(e) {
+  e.preventDefault()
+  const newTaskText = addTaskInput.value.trim()
+
+  if(newTaskText !== '') {
+    const newTask = document.createElement('li')
+    newTask.textContent = newTaskText
+    newTask.setAttribute('draggable', true)
+    newTask.addEventListener('dragstart', function(event) {
+      draggedTask = newTask
+      event.dataTransfer.effectAllowed = 'move'
+      event.dataTransfer.setData('text/html', newTask.innerHTML)
+    })
+
+    document.querySelector('#todo').appendChild(newTask)
+    addTaskInput.value = ''
+  }
+})
 
 for (const element of tasks) {
   const task = element

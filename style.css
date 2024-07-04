@@ -159,6 +159,13 @@ body {
           display: flex;
           flex-direction: column;
           gap: .75rem;
+          height: 100%;
+
+          &.dragging {
+            border-radius: .5rem;
+            padding: .5rem;
+            border: 2px dashed var(--slate-400);
+          }
 
           li {
             padding: 1rem;
@@ -166,6 +173,8 @@ body {
             border-radius: .5rem;
             box-shadow: var(--shadow-md);
             cursor: grabbing;
+            cursor: -moz-grabbing;
+            cursor: -webkit-grabbing;
 
             &:hover {
               outline: 2px dashed var(--slate-400);
@@ -175,7 +184,8 @@ body {
               opacity: .6;
             }
 
-            &.dragging {
+            &.dragover {
+              cursor: grab;
             }
           }
         }
